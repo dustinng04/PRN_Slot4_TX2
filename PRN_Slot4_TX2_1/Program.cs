@@ -1,7 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using PRN_Slot4_TX2_1;
 internal class Program()
-{ 
+{
     static String inputString(String mess)
     {
         Console.WriteLine(mess);
@@ -61,33 +61,42 @@ internal class Program()
 
     static void FindHighestSalaryEmployee(List<Employee> employees)
     {
-        if (employees.Count == 0) { Console.WriteLine("No Employees found"); return; }
-        Employee temp= employees[0];
-        foreach (var e in employees)
+        // Find fulltime & parttime lists
+
+        var fullTimeEmployees = employees.OfType<FullTimeEmployee>().ToList();
+        var partTimeEmployees = employees.OfType<PartTimeEmployee>().ToList();
+
+        // Iterate through lists to find highest salary employee
+        FullTimeEmployee highestFullTime = fullTimeEmployees.OrderByDescending(e => e.CalculateSalary()).FirstOrDefault();
+        PartTimeEmployee highestPartTime = partTimeEmployees.OrderByDescending(e => e.CalculateSalary()).FirstOrDefault();
+        if (highestFullTime != null)
         {
-            if (e.CalculateSalary() > temp.CalculateSalary())
-            {
-                temp = e;
-            }
+            Console.WriteLine("FullTime Employee with highest salary:");
+            Console.WriteLine(highestPartTime.ToString());
         }
-        Console.WriteLine("Employee with highest salary: " + temp);
+        else Console.WriteLine("No FullTime employees found.");
+        if (highestPartTime != null) { Console.WriteLine("Partime Employee with highest salary: " + highestPartTime.ToString()); }
+        else
+        {
+            Console.WriteLine("No partTime employees found");
+        }
     }
     static void FindEmployeeByName(List<Employee> employees)
     {
         String name = inputString("Enter name to search: ");
-        var foundEmployees = new List<Employee>();
-        // Iterate through list to find the matching employees and add no foundEmployees
-        foreach (var e in employees)
+        List<Employee> found = new List<Employee>();
+        foreach(var e in employees)
         {
-            if (e.GetName().Equals(name, StringComparison.OrdinalIgnoreCase)) foundEmployees.Add(e);
+            if (e.GetName().Equals(name, StringComparison.OrdinalIgnoreCase)) found.Add(e);
         }
-        // Handle 2 cases: found & not Found
-        if (foundEmployees.Count != 0)
+        if (found.Count == 0) Console.WriteLine("No Employee with that name found");
+        else
         {
-            foreach(var e in foundEmployees) Console.WriteLine(e.ToString());
-        } else { Console.WriteLine("No employee with that name found"); }
+            foreach (var e in found) Console.WriteLine(e);
+        }
+
     }
-    public static void Main()
+    static void Main()
     {
         List<Employee> employees = new List<Employee>();
 
@@ -101,7 +110,7 @@ internal class Program()
             Console.WriteLine("4. Exit");
             Console.Write("Choose an option: ");
             // Prompt user to input int
-            int option = int.Parse(Console.ReadLine());
+            int option = int.Parse(Console.ReadLine().Trim());
 
             switch (option)
             {
